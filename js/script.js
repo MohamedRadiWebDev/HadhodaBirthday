@@ -107,12 +107,12 @@ function createFloatingHearts() {
     document.body.appendChild(heartsContainer);
     
     // Create initial hearts
-    createHearts(20, heartsContainer);
+    createHearts(40, heartsContainer);
     
     // Continue creating hearts at intervals
     setInterval(() => {
-        createHearts(5, heartsContainer);
-    }, 3000);
+        createHearts(12, heartsContainer);
+    }, 2000);
 }
 
 // Create hearts for animations
