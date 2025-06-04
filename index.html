@@ -59,21 +59,11 @@
         // Update countdown function - isolated from other scripts
         function updateCountdown() {
             try {
-                // Calculate time remaining
-                const now = new Date();
-                const timeRemaining = targetDate - now;
-                
-                // Calculate time components
-                const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
-                
-                // Format with leading zeros
-                const daysStr = days < 10 ? "0" + days : days.toString();
-                const hoursStr = hours < 10 ? "0" + hours : hours.toString();
-                const minutesStr = minutes < 10 ? "0" + minutes : minutes.toString();
-                const secondsStr = seconds < 10 ? "0" + seconds : seconds.toString();
+                // Set all countdown values to "00"
+                const daysStr = "00";
+                const hoursStr = "00";
+                const minutesStr = "00";
+                const secondsStr = "00";
                 
                 // Update DOM directly
                 updateElementSafely("days", daysStr);
