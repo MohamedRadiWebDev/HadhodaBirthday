@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f8f8f8;
+        }
+        
+        .countdown-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .time-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .time-amount {
+            font-size: 48px;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+        
+        .time-label {
+            font-size: 16px;
+            color: #333;
+        }
+        
+        h1 {
+            margin-bottom: 40px;
+            color: #333;
+        }
+        
+        .debug-info {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 600px;
+        }
+        
+        .debug-info h2 {
+            margin-top: 0;
+            font-size: 18px;
+        }
+        
+        #debug-output {
+            white-space: pre-wrap;
+            font-family: monospace;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 3px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Countdown Timer Test</h1>
+    
+    <div class="countdown-container">
+        <div class="time-section">
+            <div class="time-amount" id="days">00</div>
+            <div class="time-label">Days</div>
+        </div>
+        <div class="time-section">
+            <div class="time-amount" id="hours">00</div>
+            <div class="time-label">Hours</div>
+        </div>
+        <div class="time-section">
+            <div class="time-amount" id="minutes">00</div>
+            <div class="time-label">Minutes</div>
+        </div>
+        <div class="time-section">
+            <div class="time-amount" id="seconds">00</div>
+            <div class="time-label">Seconds</div>
+        </div>
+    </div>
+    
+    <div class="debug-info">
+        <h2>Debug Information</h2>
+        <div id="debug-output"></div>
+    </div>
+    
+    <script>
+        // Debug logger
+        function log(message) {
+            const debugOutput = document.getElementById('debug-output');
+            const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
+            debugOutput.innerHTML += `[${timestamp}] ${message}\n`;
+            console.log(message);
+        }
+        
+        // Global interval ID
+        let countdownInterval = null;
+        
+        // Start countdown function
+        function startCountdown() {
+            log("Starting countdown");
+            
+            // Clear any existing interval
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                log("Cleared existing interval");
+            }
+            
+            // Update once immediately
+            updateCountdown();
+            
+            // Set interval for updates
+            countdownInterval = setInterval(updateCountdown, 1000);
+            log(`Set new interval: ${countdownInterval}`);
+        }
+        
+        // Update countdown function
+        function updateCountdown() {
+            try {
+                // Calculate time remaining to June 10, 2025
+                const now = new Date();
+                const targetDate = new Date("2025-06-10T00:00:00");
+                const timeRemaining = targetDate - now;
+                
+                log(`Current time: ${now.toISOString()}`);
+                log(`Target date: ${targetDate.toISOString()}`);
+                log(`Time remaining (ms): ${timeRemaining}`);
+                
+                // Calculate time components
+                const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+                
+                log(`Calculated components: ${days}d ${hours}h ${minutes}m ${seconds}s`);
+                
+                // Format with leading zeros
+                const daysStr = days < 10 ? "0" + days : days.toString();
+                const hoursStr = hours < 10 ? "0" + hours : hours.toString();
+                const minutesStr = minutes < 10 ? "0" + minutes : minutes.toString();
+                const secondsStr = seconds < 10 ? "0" + seconds : seconds.toString();
+                
+                // Update DOM directly
+                document.getElementById("days").textContent = daysStr;
+                document.getElementById("hours").textContent = hoursStr;
+                document.getElementById("minutes").textContent = minutesStr;
+                document.getElementById("seconds").textContent = secondsStr;
+                
+                log(`Updated DOM: ${daysStr}:${hoursStr}:${minutesStr}:${secondsStr}`);
+            } catch (error) {
+                log(`ERROR: ${error.message}`);
+                console.error("Error in updateCountdown:", error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener("DOMContentLoaded", function() {
+            log("DOM fully loaded - initializing countdown");
+            startCountdown();
+        });
+        
+        // Also initialize if DOM is already loaded
+        if (document.readyState === "complete" || document.readyState === "interactive") {
+            log("Document already loaded - starting countdown");
+            setTimeout(startCountdown, 10);
+        }
+    </script>
+</body>
+</html>

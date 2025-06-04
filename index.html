@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>عيد ميلاد سعيد هدهودة</title>
+    <link rel="stylesheet" href="css/style.css?v=20250603">
+    <link rel="stylesheet" href="css/video.css?v=20250603">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Completely isolated countdown script with DOM mutation observer -->
+    <script>
+    // Execute in an isolated scope to prevent interference
+    (function() {
+        // Store original values to detect changes
+        const originalValues = {
+            days: null,
+            hours: null,
+            minutes: null,
+            seconds: null
+        };
+        
+        // Global interval ID - scoped to this function
+        let countdownInterval = null;
+        
+        // Flag to prevent multiple initializations
+        let isInitialized = false;
+        
+        // Target date - June 10, 2025
+        const targetDate = new Date("2025-06-10T00:00:00");
+        
+        // Initialize countdown when DOM is ready
+        function initCountdown() {
+            if (isInitialized) return;
+            
+            isInitialized = true;
+            
+            // Clear any existing interval
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+            
+            // Run once immediately
+            updateCountdown();
+            
+            // Set interval for updates
+            countdownInterval = setInterval(updateCountdown, 1000);
+            
+            // Set up mutation observer to detect and prevent unwanted changes
+            setupMutationObserver();
+        }
+        
+        // Update countdown function - isolated from other scripts
+        function updateCountdown() {
+            try {
+                // Calculate time remaining
+                const now = new Date();
+                const timeRemaining = targetDate - now;
+                
+                // Calculate time components
+                const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+                
+                // Format with leading zeros
+                const daysStr = days < 10 ? "0" + days : days.toString();
+                const hoursStr = hours < 10 ? "0" + hours : hours.toString();
+                const minutesStr = minutes < 10 ? "0" + minutes : minutes.toString();
+                const secondsStr = seconds < 10 ? "0" + seconds : seconds.toString();
+                
+                // Update DOM directly
+                updateElementSafely("days", daysStr);
+                updateElementSafely("hours", hoursStr);
+                updateElementSafely("minutes", minutesStr);
+                updateElementSafely("seconds", secondsStr);
+                
+                // Store original values
+                originalValues.days = daysStr;
+                originalValues.hours = hoursStr;
+                originalValues.minutes = minutesStr;
+                originalValues.seconds = secondsStr;
+                
+                console.log("Countdown updated:", daysStr, hoursStr, minutesStr, secondsStr);
+            } catch (error) {
+                console.error("Error in updateCountdown:", error);
+            }
+        }
+        
+        // Update element safely with check for unwanted changes
+        function updateElementSafely(id, value) {
+            const element = document.getElementById(id);
+            if (element) {
+                // Only update if value has changed
+                if (element.textContent !== value) {
+                    element.textContent = value;
+                }
+            }
+        }
+        
+        // Set up mutation observer to detect and prevent unwanted changes
+        function setupMutationObserver() {
+            // Create observer instance
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    // Check if the mutation is on one of our countdown elements
+                    if (mutation.target.id === "days" || 
+                        mutation.target.id === "hours" || 
+                        mutation.target.id === "minutes" || 
+                        mutation.target.id === "seconds") {
+                        
+                        // Get the expected value
+                        let expectedValue = null;
+                        switch(mutation.target.id) {
+                            case "days": expectedValue = originalValues.days; break;
+                            case "hours": expectedValue = originalValues.hours; break;
+                            case "minutes": expectedValue = originalValues.minutes; break;
+                            case "seconds": expectedValue = originalValues.seconds; break;
+                        }
+                        
+                        // If the value was changed to something unexpected, revert it
+                        if (expectedValue !== null && mutation.target.textContent !== expectedValue) {
+                            console.log(`Detected unwanted change to ${mutation.target.id}: ${mutation.target.textContent}, reverting to ${expectedValue}`);
+                            mutation.target.textContent = expectedValue;
+                        }
+                    }
+                });
+            });
+            
+            // Observe all countdown elements
+            const daysElement = document.getElementById("days");
+            const hoursElement = document.getElementById("hours");
+            const minutesElement = document.getElementById("minutes");
+            const secondsElement = document.getElementById("seconds");
+            
+            const config = { childList: true, characterData: true, subtree: true };
+            
+            if (daysElement) observer.observe(daysElement, config);
+            if (hoursElement) observer.observe(hoursElement, config);
+            if (minutesElement) observer.observe(minutesElement, config);
+            if (secondsElement) observer.observe(secondsElement, config);
+            
+            console.log("Mutation observer set up for countdown elements");
+        }
+        
+        // Disable any other countdown scripts
+        function disableConflictingScripts() {
+            // Look for other countdown.js scripts
+            const scripts = document.querySelectorAll('script[src*="countdown"]');
+            scripts.forEach(script => {
+                if (script.src && script.src.includes('countdown')) {
+                    console.log(`Disabling conflicting script: ${script.src}`);
+                    script.setAttribute('data-disabled', 'true');
+                    script.setAttribute('src', '');
+                }
+            });
+        }
+        
+        // Initialize on DOMContentLoaded
+        document.addEventListener("DOMContentLoaded", function() {
+            disableConflictingScripts();
+            setTimeout(initCountdown, 100);
+        });
+        
+        // Also initialize if DOM is already loaded
+        if (document.readyState === "complete" || document.readyState === "interactive") {
+            disableConflictingScripts();
+            setTimeout(initCountdown, 100);
+        }
+        
+        // Also initialize on window load as a fallback
+        window.addEventListener("load", function() {
+            disableConflictingScripts();
+            setTimeout(initCountdown, 100);
+        });
+        
+        // Set up a backup interval to ensure countdown runs and stays correct
+        setInterval(function() {
+            // Check if days element has been reset to default
+            const daysElement = document.getElementById("days");
+            if (daysElement && daysElement.textContent === "07" && originalValues.days !== "07") {
+                console.log("Detected reset to default values, reinitializing countdown");
+                updateCountdown();
+            }
+        }, 500);
+    })();
+    </script>
+</head>
+<body>
+    <div class="audio-control">
+        <button id="toggleAudio">
+            <i class="fas fa-volume-up"></i>
+        </button>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1 class="title">Happy Birthday <span class="hadhoda-name">Hadhoda </span></h1>
+
+            <div class="countdown-container">
+                <div id="countdown">
+                    <div class="time-section">
+                        <div class="time-amount" id="days">00</div>
+                        <div class="time-label">أيام</div>
+                    </div>
+                    <div class="time-section">
+                        <div class="time-amount" id="hours">00</div>
+                        <div class="time-label">ساعات</div>
+                    </div>
+                    <div class="time-section">
+                        <div class="time-amount" id="minutes">00</div>
+                        <div class="time-label">دقائق</div>
+                    </div>
+                    <div class="time-section">
+                        <div class="time-amount" id="seconds">00</div>
+                        <div class="time-label">ثواني</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="greeting-card">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="envelope">
+                            <!-- Added heart-container div for proper centering -->
+                            <div class="heart-container">
+                                <div class="heart"></div>
+                            </div>
+                            <h2>اضغط لفتح الرسالة</h2>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="message" id="birthdayMessage"></div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="final-message">
+                <h2>كلمتين كده مننا ليكي 🎉</h2>
+                <div class="hearts-container">
+                    <!-- القلوب المتحركة ستضاف هنا بواسطة JavaScript -->
+                </div>
+                <div class="final-love-message">
+                    <p>كل سنة وإنتي طيبة وبألف خير يا نجم ✨</p>
+                    <p>يارب دايمًا فايقة، رايقة... ومبتبطليش أكل 😂🍰</p>
+
+                </div>
+            </section>
+
+            <section class="guestbook">
+                <h2>كلمة حلوة</h2>
+                <div class="guestbook-container">
+                    <div id="wishes-container" class="wishes-container">
+                        <!-- التهاني ستضاف هنا بواسطة JavaScript -->
+                        <div class="loading">استنى علينا بنحمّل كلام الرجالة...</div>
+                    </div>
+                    <div class="add-wish-button-container">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSePBoUBbU9ptYc91q4Fydo6zrbsfE9TsgzGlP419sL3ce5Hvw/viewform" 
+                            target="_blank" 
+                            class="add-wish-button">
+                            <i class="heart-icon">❤️</i> سيب كلمتين حلوين
+                        </a>
+                    </div>
+                </div>
+            </section>
+            
+
+        </main>
+
+        <footer>
+            <div class="balloons">
+                <div class="balloon balloon-1"></div>
+                <div class="balloon balloon-2"></div>
+                <div class="balloon balloon-3"></div>
+                <div class="balloon balloon-4"></div>
+                <div class="balloon balloon-5"></div>
+            </div>
+            <p>❤️</p>
+        </footer>
+    </div>
+
+    <audio id="bgMusic" loop autoplay>
+        <source src="assets/ssstik.io_@nabilabdallah600_1748947684329.mp3" type="audio/mp3">
+    </audio>
+    
+    <!-- Initialize birthday message -->
+    <script>
+        document.getElementById('birthdayMessage').innerHTML = 'كل سنة وانتي طيبة يا أحلى وأحن إنسانة ❤️ وبنتمنى ليكي سنة جديدة كلها فرحة وضحكة ما تفارقكيش أبدًا 🎉🎂🌸';
+    </script>
+    
+    <!-- Card flip and audio setup -->
+    <script>
+    // Setup card flip functionality
+    document.addEventListener("DOMContentLoaded", function() {
+        setupCardFlip();
+        setupAudio();
+    });
+    
+    function setupCardFlip() {
+        try {
+            const card = document.querySelector(".card-inner");
+            if (!card) return;
+            
+            // Remove existing listeners
+            const newCard = card.cloneNode(true);
+            card.parentNode.replaceChild(newCard, card);
+            
+            // Add toggle functionality
+            newCard.addEventListener("click", function() {
+                this.classList.toggle("flipped");
+            });
+            
+            // Add specific front/back handlers
+            const cardFront = newCard.querySelector(".card-front");
+            const cardBack = newCard.querySelector(".card-back");
+            const envelope = newCard.querySelector(".card-front .envelope");
+            
+            if (envelope) {
+                envelope.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    newCard.classList.add("flipped");
+                });
+            }
+            
+            if (cardBack) {
+                cardBack.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    newCard.classList.remove("flipped");
+                });
+            }
+            
+            console.log("Card flip setup complete");
+        } catch (error) {
+            console.error("Error in setupCardFlip:", error);
+        }
+    }
+    
+    function setupAudio() {
+        try {
+            // Get audio element
+            const audio = document.getElementById("bgMusic");
+            const toggleButton = document.getElementById("toggleAudio");
+            
+            if (!audio || !toggleButton) return;
+            
+            // Set up audio toggle button
+            toggleButton.addEventListener("click", function() {
+                if (audio.paused) {
+                    audio.play();
+                    toggleButton.querySelector("i").className = "fas fa-volume-up";
+                } else {
+                    audio.pause();
+                    toggleButton.querySelector("i").className = "fas fa-volume-mute";
+                }
+            });
+        } catch (error) {
+            console.error("Error in setupAudio:", error);
+        }
+    }
+    
+    // Run on window load as well
+    window.addEventListener("load", function() {
+        setupCardFlip();
+        setupAudio();
+    });
+    </script>
+    
+    <!-- Other scripts - but not countdown.js which conflicts -->
+    <script src="js/fetch_greetings.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/gallery.js"></script>
+</body>
+</html>
